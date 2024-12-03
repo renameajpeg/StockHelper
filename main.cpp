@@ -3,10 +3,14 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 #include <cmath>
 #include <map>
 #include <limits>
+#include <bits/fs_ops.h>
 using namespace std;
+namespace fs = std::filesystem;
+
 
 struct Stock {
     string ticker;
@@ -83,26 +87,78 @@ public:
     }
 };
 
-// function to read CSV and load data 
+// class for map of stocks and associated functions
+class MapSort {
+    //**instead of Stock for value, use vector of all vals other than ticker? (since ticker is key)
+    map<string, Stock> stocks;
+public:
+    void insert(Stock stock) {
+        stocks.insert({stock.ticker, stock});
+    }
+    
+    //**change to sort or fix iteration
+    Stock getMax() {
+        Stock output = stocks.begin()->second;
+        int tempPrice = output.highPrice;
+        // returns from final sorted map, prioritizes lowest highPrice value
+        for (auto it : stocks) {
+            if (it.second.highPrice <= tempPrice) {
+                output = it.second;
+            }
+        }
+        return output;
+    }
+
+    bool isEmpty() {
+        return stocks.empty();
+    }
+    //**separate insert functions for each variable? (would determine which to use based on user input)
+};
+
+// function to read CSV and load data
 vector<Stock> loadStocks(const string& filename) {
     vector<Stock> stocks;
-    ifstream file(filename);
+    ifstream file;
+    fs::path cwd = fs::current_path().parent_path() / filename;
+    cout << cwd << endl;
+    file.open(cwd);
     if (!file.is_open()) {
         cerr << "Failed to open file: " << filename << endl;
         return stocks;
     }
 
     string line, ticker, industry;
-    double high, low, risk;
+    string high, low, risk;
+    double highDouble, lowDouble, riskDouble;
 
-    getline(file, line);
+    // getline(file, line);
+    // cout<<line<<endl;
+    //getline(file, line);
+
+    long count = 0;
+
 
     while (getline(file, line)) {
+        count++;
         stringstream ss(line);
-        getline(ss, ticker, ',');
-        getline(ss, industry, ',');
-        ss >> high >> low >> risk;
-        stocks.emplace_back(ticker, industry, high, low, risk);
+        getline(ss, ticker, '\t');
+        getline(ss, industry, '\t');
+        getline(ss, high, '\t');
+        getline(ss, low, '\t');
+        getline(ss, risk, '\n');
+        //cout << "high " <<  high << " low " << low << " risk " << risk << endl;
+        highDouble = stod(high);
+        lowDouble = stod(low);
+        riskDouble = stod(risk);
+        if (count == 99999) {
+            cout<<"Stock: "<<stocks.begin()->ticker<<" "<<stocks.begin()->industry<<endl;
+            cout<<ticker<<" "<<industry<< " "<<highDouble<<" "<<low<<" "<<risk<<endl;
+            cout<<stocks.back().ticker<<" "<<stocks.back().industry<<" "<<stocks.back().highPrice<<" "<<stocks.back().lowPrice<<" "<<stocks.back().riskLevel<<endl;
+
+        }
+
+        //ss >> high >> low >> risk;
+        stocks.emplace_back(ticker, industry, highDouble, lowDouble, riskDouble);
     }
 
     file.close();
@@ -115,9 +171,9 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
     cout << "Debugging Filter Logic:\n";
 
     for (const auto& stock : stocks) {
-        cout << "Checking stock: " << stock.ticker << ", Industry: " << stock.industry
+        /*cout << "Checking stock: " << stock.ticker << ", Industry: " << stock.industry
              << ", High Price: " << stock.highPrice << ", Risk: " << stock.riskLevel << endl;
-
+        */
         if (stock.highPrice <= budget && stock.riskLevel <= riskTolerance &&
             (preferredIndustry.empty() || stock.industry == preferredIndustry)) {
             cout << "Stock matches criteria: " << stock.ticker << endl;
@@ -133,13 +189,15 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
 int main() {
     vector<Stock> allStocks;
 
-    vector<string> files = {"overall_stock_data.csv"};
+    //vector<string> files = {"fake_stock_data.txt"};
     //vector<string> files = {"AAPL.csv", "AMD.csv", "AMZN.csv", "CSCO.csv", "META.csv",
                             //"MSFT.csv", "NFLX.csv", "QCOM.csv", "SBUX.csv", "TSLA.csv", "overall_stock_data.csv"};
-    for (const auto& file : files) {
+   /*for (const auto& file : files) {
         vector<Stock> stocks = loadStocks(file);
         allStocks.insert(allStocks.end(), stocks.begin(), stocks.end());
-    }
+    }*/
+    vector<Stock> stocks = loadStocks("fake_stock_data.txt");
+    cout<<"Stock: "<<stocks.begin()->ticker<<" "<<stocks.begin()->industry<<endl;
 
     // user inputs
     double budget;
@@ -150,12 +208,14 @@ int main() {
     cin >> budget;
     cout << "Enter your risk tolerance (1 = Low, 2 = Medium, 3 = High): ";
     cin >> riskTolerance;
-    cin.ignore(); 
+    cin.ignore();
     cout << "Enter your preferred industry (or leave blank for no preference): ";
     getline(cin, preferredIndustry);
+    cout<<budget<<" "<<riskTolerance<<" "<<preferredIndustry<<endl;
+
 
     // filter stocks based on input
-    vector<Stock> filteredStocks = filterStocks(allStocks, budget, riskTolerance, preferredIndustry);
+    vector<Stock> filteredStocks = filterStocks(stocks, budget, riskTolerance, preferredIndustry);
 
     //  heap for recommendations
     Heap stockHeap;
