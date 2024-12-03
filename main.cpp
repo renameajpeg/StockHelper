@@ -3,13 +3,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <filesystem>
 #include <cmath>
 #include <map>
 #include <limits>
-#include <bits/fs_ops.h>
 using namespace std;
-namespace fs = std::filesystem;
 
 
 struct Stock {
@@ -90,10 +87,7 @@ public:
 // function to read CSV and load data
 vector<Stock> loadStocks(const string& filename) {
     vector<Stock> stocks;
-    ifstream file;
-    fs::path cwd = fs::current_path().parent_path() / filename;
-    cout << cwd << endl;
-    file.open(cwd);
+    ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Failed to open file: " << filename << endl;
         return stocks;
