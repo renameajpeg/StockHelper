@@ -99,6 +99,7 @@ public:
         for (auto it : stocks) {
             if (it.second.percentChange >= tempPct) {
                 output = it.second;
+                tempPct = output.percentChange;
             }
         }
         return output;
@@ -237,12 +238,6 @@ int main() {
             }
             else {
                 cout << "Top recommended stock:" << endl;
-                Stock topStock = stockMap.getMax();
-                cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
-                    << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
-            }
-            for (int i = 2; i < 11; i++) {
-                cout << i << ". ";
                 Stock topStock = stockMap.getMax();
                 cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
                     << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
