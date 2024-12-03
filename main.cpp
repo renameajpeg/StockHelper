@@ -105,6 +105,19 @@ public:
         return output;
     }
 
+    void mapIterate(int len) {
+        int i = 2;
+        for (auto iter : stocks) {
+            if (i >= len) {
+                break;
+            }
+            Stock iterated = iter.second;
+            cout << i << ". " << iterated.ticker << " (" << iterated.industry << "): " << iterated.percentChange
+                << "% change, High Price: $" << iterated.highPrice << ", Low Price: $" << iterated.lowPrice << endl;
+            i++;
+        }
+    }
+
     bool isEmpty() {
         return stocks.empty();
     }
@@ -242,6 +255,8 @@ int main() {
                 cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
                     << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
             }
+            //**make so highest % change values are in top 10
+            stockMap.mapIterate(11);
         }
         // error if input is invalid
         else {
