@@ -103,15 +103,11 @@ vector<Stock> loadStocks(const string& filename) {
     string high, low, risk;
     double highDouble, lowDouble, riskDouble;
 
-    // getline(file, line);
-    // cout<<line<<endl;
-    //getline(file, line);
 
     long count = 0;
 
 
     while (getline(file, line)) {
-        count++;
         stringstream ss(line);
         getline(ss, ticker, '\t');
         getline(ss, industry, '\t');
@@ -122,14 +118,6 @@ vector<Stock> loadStocks(const string& filename) {
         highDouble = stod(high);
         lowDouble = stod(low);
         riskDouble = stod(risk);
-        if (count == 99999) {
-            cout<<"Stock: "<<stocks.begin()->ticker<<" "<<stocks.begin()->industry<<endl;
-            cout<<ticker<<" "<<industry<< " "<<highDouble<<" "<<low<<" "<<risk<<endl;
-            cout<<stocks.back().ticker<<" "<<stocks.back().industry<<" "<<stocks.back().highPrice<<" "<<stocks.back().lowPrice<<" "<<stocks.back().riskLevel<<endl;
-
-        }
-
-        //ss >> high >> low >> risk;
         stocks.emplace_back(ticker, industry, highDouble, lowDouble, riskDouble);
     }
 
@@ -148,7 +136,7 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
         */
         if (stock.highPrice <= budget && stock.riskLevel <= riskTolerance &&
             (preferredIndustry.empty() || stock.industry == preferredIndustry)) {
-            cout << "Stock matches criteria: " << stock.ticker << endl;
+            //cout << "Stock matches criteria: " << stock.ticker << endl;
             filtered.push_back(stock);
         }
     }
