@@ -84,6 +84,32 @@ public:
     }
 };
 
+// class for map and associated functions
+class MapSort {
+    map<string, Stock> stocks;
+public:
+    void insert(Stock stock) {
+        stocks.insert({ stock.ticker, stock });
+    }
+
+    Stock getMax() {
+        Stock output = stocks.begin()->second;
+        int tempPct = output.percentChange;
+        // returns from final sorted map, prioritizes lowest highPrice value
+        for (auto it : stocks) {
+            if (it.second.percentChange >= tempPct) {
+                output = it.second;
+            }
+        }
+        return output;
+    }
+
+    bool isEmpty() {
+        return stocks.empty();
+    }
+};
+
+
 // function to read CSV and load data
 vector<Stock> loadStocks(const string& filename) {
     vector<Stock> stocks;
@@ -151,45 +177,88 @@ int main() {
         allStocks.insert(allStocks.end(), stocks.begin(), stocks.end());
     }*/
     vector<Stock> stocks = loadStocks("fake_stock_data.txt");
-    cout<<"Stock: "<<stocks.begin()->ticker<<" "<<stocks.begin()->industry<<endl;
+    cout << "Stock: " << stocks.begin()->ticker << " " << stocks.begin()->industry << endl;
 
     // user inputs
     double budget;
     int riskTolerance;
     string preferredIndustry;
 
-    cout << "Enter your budget: ";
-    cin >> budget;
-    cout << "Enter your risk tolerance (1 = Low, 2 = Medium, 3 = High): ";
-    cin >> riskTolerance;
-    cin.ignore();
-    cout << "Enter your preferred industry (or leave blank for no preference): ";
-    getline(cin, preferredIndustry);
-    cout<<budget<<" "<<riskTolerance<<" "<<preferredIndustry<<endl;
+    bool switcher = true;
+    while (switcher) {
+        cout << "Enter your budget: ";
+        cin >> budget;
+        cout << "Enter your risk tolerance (1 = Low, 2 = Medium, 3 = High): ";
+        cin >> riskTolerance;
+        cin.ignore();
+        cout << "Enter your preferred industry (or leave blank for no preference): ";
+        getline(cin, preferredIndustry);
+        cout << budget << " " << riskTolerance << " " << preferredIndustry << endl;
 
 
-    // filter stocks based on input
-    vector<Stock> filteredStocks = filterStocks(stocks, budget, riskTolerance, preferredIndustry);
+        // filter stocks based on input
+        vector<Stock> filteredStocks = filterStocks(stocks, budget, riskTolerance, preferredIndustry);
 
-    //  heap for recommendations
-    Heap stockHeap;
-    for (const auto& stock : filteredStocks) {
-        stockHeap.insert(stock);
-    }
+        // prompt user for choice of data structure
+        int structChoice;
+        cout << "Enter your preferred data structure ('1' for Heap, '2' for Map): " << endl;
+        cin >> structChoice;
 
-    if (stockHeap.isEmpty()) {
-        cout << "No stocks match your criteria." << endl;
-    } else {
-        cout << "Top recommended stock:" << endl;
-        Stock topStock = stockHeap.extractMax();
-        cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
-             << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
-    }
-    for (int i = 2; i< 11; i++) {
-        cout<<i<<". ";
-        Stock topStock = stockHeap.extractMax();
-        cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
-             << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
+        //  uses heap for recommendations
+        if (structChoice == 1) {
+            Heap stockHeap;
+            for (const auto& stock : filteredStocks) {
+                stockHeap.insert(stock);
+            }
+            if (stockHeap.isEmpty()) {
+                cout << "No stocks match your criteria." << endl;
+            }
+            else {
+                cout << "Top recommended stock:" << endl;
+                Stock topStock = stockHeap.extractMax();
+                cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
+                    << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
+            }
+            for (int i = 2; i < 11; i++) {
+                cout << i << ". ";
+                Stock topStock = stockHeap.extractMax();
+                cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
+                    << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
+            }
+        }
+        // uses map for recommendations
+        else if (structChoice == 2) {
+            MapSort stockMap;
+            for (auto stock : filteredStocks) {
+                stockMap.insert(stock);
+            }
+            if (stockMap.isEmpty()) {
+                cout << "No stocks match your criteria." << endl;
+            }
+            else {
+                cout << "Top recommended stock:" << endl;
+                Stock topStock = stockMap.getMax();
+                cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
+                    << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
+            }
+            for (int i = 2; i < 11; i++) {
+                cout << i << ". ";
+                Stock topStock = stockMap.getMax();
+                cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
+                    << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
+            }
+        }
+        // error if input is invalid
+        else {
+            cout << "Invalid choice" << endl;
+        }
+        // continues or ends program loop 
+        cout << "Enter 1 to continue or 0 to quit: " << endl;
+        int userContinue;
+        cin >> userContinue;
+        if (userContinue == 0) {
+            switcher = false;
+        }
     }
 
     return 0;
