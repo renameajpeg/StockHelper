@@ -177,7 +177,7 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
 
 int main() {
     vector<Stock> stocks = loadStocks("fake_stock_data.txt");
-    cout << "Stock: " << stocks.begin()->ticker << " " << stocks.begin()->industry << endl;
+    //cout << "Stock: " << stocks.begin()->ticker << " " << stocks.begin()->industry << endl;
 
     // user inputs
     double budget;
