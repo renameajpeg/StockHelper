@@ -218,12 +218,12 @@ int main() {
                 cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
                     << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
             }
-            for (int i = 2; i < 11; i++) {
+            /*for (int i = 2; i < 11; i++) {
                 cout << i << ". ";
                 Stock topStock = stockHeap.extractMax();
                 cout << topStock.ticker << " (" << topStock.industry << "): " << topStock.percentChange
                     << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
-            }
+            }*/
         }
         // uses map for recommendations
         else if (structChoice == 2) {
@@ -241,7 +241,7 @@ int main() {
                     << "% change, High Price: $" << topStock.highPrice << ", Low Price: $" << topStock.lowPrice << endl;
             }
             //**make so highest % change values are in top 10
-            stockMap.mapIterate(11);
+            /*stockMap.mapIterate(11);*/
         }
         // error if input is invalid
         else {
