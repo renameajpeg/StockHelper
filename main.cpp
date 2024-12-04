@@ -148,7 +148,6 @@ vector<Stock> loadStocks(const string& filename) {
         getline(ss, high, '\t');
         getline(ss, low, '\t');
         getline(ss, risk, '\n');
-        //cout << "high " <<  high << " low " << low << " risk " << risk << endl;
         highDouble = stod(high);
         lowDouble = stod(low);
         riskDouble = stod(risk);
@@ -165,12 +164,8 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
     cout << "Debugging Filter Logic:\n";
 
     for (const auto& stock : stocks) {
-        /*cout << "Checking stock: " << stock.ticker << ", Industry: " << stock.industry
-             << ", High Price: " << stock.highPrice << ", Risk: " << stock.riskLevel << endl;
-        */
         if (stock.highPrice <= budget && stock.riskLevel <= riskTolerance &&
             (preferredIndustry.empty() || stock.industry == preferredIndustry)) {
-            //cout << "Stock matches criteria: " << stock.ticker << endl;
             filtered.push_back(stock);
         }
     }
@@ -181,15 +176,6 @@ vector<Stock> filterStocks(const vector<Stock>& stocks, double budget, int riskT
 
 
 int main() {
-    vector<Stock> allStocks;
-
-    //vector<string> files = {"fake_stock_data.txt"};
-    //vector<string> files = {"AAPL.csv", "AMD.csv", "AMZN.csv", "CSCO.csv", "META.csv",
-                            //"MSFT.csv", "NFLX.csv", "QCOM.csv", "SBUX.csv", "TSLA.csv", "overall_stock_data.csv"};
-   /*for (const auto& file : files) {
-        vector<Stock> stocks = loadStocks(file);
-        allStocks.insert(allStocks.end(), stocks.begin(), stocks.end());
-    }*/
     vector<Stock> stocks = loadStocks("fake_stock_data.txt");
     cout << "Stock: " << stocks.begin()->ticker << " " << stocks.begin()->industry << endl;
 
@@ -207,7 +193,6 @@ int main() {
         cin.ignore();
         cout << "Enter your preferred industry (or leave blank for no preference): ";
         getline(cin, preferredIndustry);
-        cout << budget << " " << riskTolerance << " " << preferredIndustry << endl;
 
 
         // filter stocks based on input
